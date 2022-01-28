@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.6.10"
     application
+    `java-gradle-plugin`
 }
 
 group = "com.zconger"
@@ -28,15 +29,24 @@ application {
     mainClass.set("MainKt")
 }
 
+gradlePlugin {
+    plugins {
+        create("simplePlugin") {
+            id = "com.zconger.greeting"
+            implementationClass = "com.zconger.GreetingPlugin"
+        }
+    }
+}
+
 class GreetingPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create<GreetingPluginExtension>("greeting")
         val extensor = project.extensions.create<GreetingPluginExtensor>("greetinations")
         project.task("hello") {
             doLast {
-//                println("Hello from the GreetingPlugin.")
-                println(extension.message.get())
-                println("${extensor.message.get()} from ${extensor.greeter.get()}!")
+                println("Hello from the GreetingPlugin.")
+//                println(extension.message.get())
+//                println("${extensor.message.get()} from ${extensor.greeter.get()}!")
             }
         }
     }
@@ -103,3 +113,7 @@ tasks.register("sayGreeting") {
 
 // Put the greeting in ./build/hello.txt
 greetingFile.set(layout.buildDirectory.file("hello.txt"))
+
+tasks.forEach<Task> {
+    println(it)
+}
